@@ -108,7 +108,27 @@
                      x-transition:enter-start="opacity-0 -translate-y-2"
                      x-transition:enter-end="opacity-100 translate-y-0"
                      class="p-6 border-b" style="border-color: var(--md-border); background: var(--md-surface-soft)">
-                    <form action="{{ route('targets.store') }}" method="POST">
+                    <form action="{{ route('targets.store') }}" method="POST"
+                          x-data="{
+                              hostValue: @js(old('host', '')),
+                              hostWarning: '',
+                              validateHost() {
+                                  let h = this.hostValue.trim();
+                                  if (!h) { this.hostWarning = ''; return; }
+                                  // Strip protocol prefix for validation
+                                  h = h.replace(/^(https?|tcp):\/\//i, '').replace(/[\/:].*/,'');
+                                  const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(h);
+                                  const ipv6 = /^\[?[0-9a-fA-F:]+\]?$/.test(h) && h.includes(':');
+                                  const domain = /^([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(h);
+                                  if (!ipv4 && !ipv6 && !domain) {
+                                      this.hostWarning = 'Domain harus memiliki ekstensi (contoh: .com, .co.id, .net) atau gunakan alamat IP.';
+                                  } else {
+                                      this.hostWarning = '';
+                                  }
+                              }
+                          }"
+                          @submit.prevent="validateHost(); if (hostWarning) return; $el.submit();"
+                    >
                         @csrf
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
@@ -127,7 +147,8 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold mb-1" style="color: var(--md-text-soft)">Host (Domain / IP)</label>
-                                <input type="text" name="host" required value="{{ old('host') }}" placeholder="myapp.com atau https://myapp.com" class="monitor-input w-full text-sm">
+                                <input type="text" name="host" required x-model="hostValue" @blur="validateHost" @input="hostWarning = ''" placeholder="myapp.com atau https://myapp.com" class="monitor-input w-full text-sm" :class="hostWarning ? 'ring-2 ring-amber-500/50' : ''">
+                                <p x-show="hostWarning" x-cloak class="mt-1 text-xs" style="color: #d97706;" x-text="hostWarning"></p>
                                 @error('host')<p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
                             </div>
                             <div>

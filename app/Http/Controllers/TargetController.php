@@ -162,6 +162,17 @@ class TargetController extends Controller
             ]);
         }
 
+        // Validasi format: harus domain dengan TLD atau IP address
+        $isIPv4 = filter_var($parsedHost, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+        $isIPv6 = filter_var($parsedHost, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+        $isDomain = preg_match('/^([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', $parsedHost);
+
+        if (!$isIPv4 && !$isIPv6 && !$isDomain) {
+            throw ValidationException::withMessages([
+                'host' => 'Domain harus memiliki ekstensi yang valid (contoh: .com, .co.id, .net). Atau gunakan alamat IP seperti 192.168.1.1.',
+            ]);
+        }
+
         $parsedProtocol = strtolower((string) ($parts['scheme'] ?? $protocol ?? 'https'));
 
         if (!in_array($parsedProtocol, ['http', 'https', 'tcp'], true)) {
