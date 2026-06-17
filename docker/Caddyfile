@@ -1,4 +1,13 @@
+{
+    debug
+}
+
 :{$PORT} {
+    log {
+        output stdout
+        level DEBUG
+    }
+
     encode gzip
 
     # WebSocket: MUST be handled FIRST before php_fastcgi

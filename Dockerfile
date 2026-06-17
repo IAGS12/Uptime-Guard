@@ -59,16 +59,13 @@ RUN composer dump-autoload --optimize \
 # Copy configs
 COPY docker/Caddyfile /etc/caddy/Caddyfile
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Ensure storage & cache directories are writable
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache
 
-# Optimize Laravel for production
-RUN php artisan config:clear \
-    && php artisan route:cache \
-    && php artisan view:cache
-
 EXPOSE ${PORT:-8080}
 
-CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/app/start.sh"]
