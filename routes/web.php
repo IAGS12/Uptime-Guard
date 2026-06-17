@@ -59,3 +59,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// --- TEMPORARY DEBUG ROUTE ---
+Route::get('/debug-logs', function () {
+    $logFile = storage_path('logs/laravel.log');
+    if (!file_exists($logFile)) {
+        return "Log file not found.";
+    }
+    $lines = file($logFile);
+    $lastLines = array_slice($lines, -500);
+    return response("<pre style='background:#111;color:#0f0;padding:20px;white-space:pre-wrap;font-family:monospace;'>" . htmlspecialchars(implode("", $lastLines)) . "</pre>")
+        ->header('Content-Type', 'text/html');
+});
