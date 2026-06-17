@@ -25,6 +25,16 @@ class PingTargetJob implements ShouldQueue
         $this->targetId = $targetId;
     }
 
+    /**
+     * Get the middleware the job should pass through.
+     * Mencegah penumpukan antrean: Jika target ini sedang diproses/antre, jangan masukkan ke antrean lagi.
+     * Akan kadaluarsa otomatis dalam 60 detik jika nyangkut.
+     */
+    public function middleware(): array
+    {
+        return [new \Illuminate\Queue\Middleware\WithoutOverlapping((string) $this->targetId, 60)];
+    }
+
     public function handle(): void
     {
         // 1. Fetch data awal
