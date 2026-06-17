@@ -24,11 +24,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Allow Composer to run as root in Docker
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 WORKDIR /app
 
 # Copy composer files and install PHP dependencies
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs
 
 # Copy package files and install + build frontend
 COPY package.json package-lock.json ./
