@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 // Cek semua target aktif setiap menit (interval per-target dikelola di dalam command)
-Schedule::command('monitor:run')->everySecond();
+Schedule::command('monitor:run')->everyMinute();
 
 // Hitung ulang uptime % setiap jam
 Schedule::command('uptime:calculate')->hourly();

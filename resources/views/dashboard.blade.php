@@ -224,7 +224,7 @@
                                     <div>
                                         <div class="eyebrow mb-1">Response</div>
                                         <div class="response-col">
-                                            @if($target->last_response_time)
+                                            @if($target->last_response_time !== null)
                                                 @php $rt = $target->last_response_time; @endphp
                                                 <span class="text-sm font-black {{ $rt < 200 ? 'text-emerald-600 dark:text-emerald-400' : ($rt < 800 ? 'text-yellow-600 dark:text-yellow-300' : 'text-red-600 dark:text-red-400') }}">
                                                     {{ number_format($rt) }} ms

@@ -133,8 +133,17 @@ class PingTargetJob implements ShouldQueue
 
         // 3. Broadcast & Notifikasi setelah transaksi
         if ($updatedTarget) {
-            \App\Events\TargetPinged::dispatch($updatedTarget);
-            $this->handleNotifications($updatedTarget, $previousStatus, $newStatus);
+            try {
+                \App\Events\TargetPinged::dispatch($updatedTarget);
+            } catch (\Exception $e) {
+                Log::warning("Broadcast gagal untuk target {$this->targetId}: " . $e->getMessage());
+            }
+
+            try {
+                $this->handleNotifications($updatedTarget, $previousStatus, $newStatus);
+            } catch (\Exception $e) {
+                Log::warning("Notifikasi gagal untuk target {$this->targetId}: " . $e->getMessage());
+            }
         }
     }
 
