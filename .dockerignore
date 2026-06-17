@@ -1,6 +1,4 @@
 # Development files
-docker/
-.git/
 .github/
 .env
 .env.backup
