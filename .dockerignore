@@ -1,0 +1,33 @@
+# Development files
+docker/
+.git/
+.github/
+.env
+.env.backup
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+
+# Dependencies (will be installed during build)
+node_modules/
+vendor/
+
+# Testing & dev tools
+tests/
+phpunit.xml
+.phpunit*
+
+# Build artifacts
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Documentation
+*.md
+!README.md
