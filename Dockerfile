@@ -40,6 +40,16 @@ RUN npm ci && npm cache clean --force
 # Copy the rest of the application
 COPY . .
 
+# Vite env vars must be available at build time (baked into JS bundle)
+ARG VITE_REVERB_APP_KEY
+ARG VITE_REVERB_HOST
+ARG VITE_REVERB_PORT=443
+ARG VITE_REVERB_SCHEME=https
+ENV VITE_REVERB_APP_KEY=${VITE_REVERB_APP_KEY}
+ENV VITE_REVERB_HOST=${VITE_REVERB_HOST}
+ENV VITE_REVERB_PORT=${VITE_REVERB_PORT}
+ENV VITE_REVERB_SCHEME=${VITE_REVERB_SCHEME}
+
 # Run post-install scripts and build frontend
 RUN composer dump-autoload --optimize \
     && php artisan package:discover --ansi \

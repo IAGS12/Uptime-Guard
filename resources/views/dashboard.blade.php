@@ -320,6 +320,7 @@
     </div>
 
     <script type="module">
+        if (window.Echo) {
         window.Echo.private('App.Models.User.{{ auth()->id() }}')
             .listen('.TargetPinged', (e) => {
                 const row = document.getElementById('target-row-' + e.id);
@@ -358,5 +359,6 @@
                     document.querySelector('.summary-paused').textContent = e.summary.paused;
                 }
             });
+        }
     </script>
 </x-app-layout>
