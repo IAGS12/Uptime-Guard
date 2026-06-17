@@ -23,6 +23,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [TargetController::class, 'index'])->name('dashboard');
 
+    // Panduan Pengguna
+    Route::get('/guide', fn () => view('guide'))->name('guide');
+
     // Target Management
     Route::prefix('targets')->name('targets.')->group(function () {
         Route::post('/',                [TargetController::class, 'store'])->name('store');
