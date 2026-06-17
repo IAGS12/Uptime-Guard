@@ -122,12 +122,15 @@ class NotificationChannelController extends Controller
             ->values();
 
         if ($chats->isEmpty()) {
+            $botUsername = $botResponse->json('result.username');
             return response()->json([
                 'token' => $token,
-                'bot' => $botResponse->json('result.username'),
+                'bot' => $botUsername,
                 'chats' => [],
-                'message' => 'Chat ID belum ditemukan. Kirim /start ke bot, lalu klik Ambil Chat ID lagi.',
-            ], 422);
+                'status' => 'needs_start',
+                'message' => "Bot valid! Tapi belum ada chat. Klik link di bawah untuk membuka bot, tekan Start, lalu klik \"Ambil\" lagi.",
+                'bot_link' => "https://t.me/{$botUsername}",
+            ]);
         }
 
         return response()->json([

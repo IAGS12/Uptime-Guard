@@ -100,10 +100,14 @@
                     lookupLoading: false,
                     lookupMessage: '',
                     lookupError: false,
+                    lookupNeedsStart: false,
+                    botLink: '',
                     async lookupTelegramChats() {
                         this.lookupLoading = true;
                         this.lookupMessage = '';
                         this.lookupError = false;
+                        this.lookupNeedsStart = false;
+                        this.botLink = '';
                         this.telegramChats = [];
 
                         try {
@@ -115,7 +119,10 @@
                             this.telegramChats = response.data.chats || [];
                             this.lookupMessage = response.data.message || 'Chat ID ditemukan.';
 
-                            if (this.telegramChats.length === 1) {
+                            if (response.data.status === 'needs_start') {
+                                this.lookupNeedsStart = true;
+                                this.botLink = response.data.bot_link || '';
+                            } else if (this.telegramChats.length === 1) {
                                 this.telegramChatId = this.telegramChats[0].id;
                             }
                         } catch (error) {
@@ -167,7 +174,26 @@
                             </div>
                             @error('telegram_chat_id')<p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>@enderror
                         </div>
-                        <div x-show="lookupMessage" x-cloak class="md:col-span-2 rounded-lg border px-4 py-3 text-sm" :class="lookupError ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'" style="border-color: var(--md-border); background: var(--md-surface-soft)">
+                        {{-- Needs Start: panduan buka bot --}}
+                        <div x-show="lookupNeedsStart" x-cloak class="md:col-span-2 rounded-lg border px-4 py-4 text-sm space-y-3" style="border-color: #d97706; background: rgba(217, 119, 6, 0.08);">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="#d97706" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div>
+                                    <p class="font-bold" style="color: #d97706;">Satu langkah lagi!</p>
+                                    <p style="color: var(--md-text-soft);" x-text="lookupMessage"></p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <a :href="botLink" target="_blank" rel="noopener" class="md-button md-button-secondary inline-flex items-center gap-2 py-2 px-4 text-sm" style="border-color: #d97706; color: #d97706;">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                                    Buka Bot di Telegram
+                                </a>
+                                <span class="text-xs" style="color: var(--md-muted);">Tekan <strong>Start</strong> di bot, lalu kembali ke sini dan klik <strong>"Ambil"</strong> lagi.</span>
+                            </div>
+                        </div>
+
+                        {{-- Pesan sukses atau error biasa --}}
+                        <div x-show="lookupMessage && !lookupNeedsStart" x-cloak class="md:col-span-2 rounded-lg border px-4 py-3 text-sm" :class="lookupError ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'" style="border-color: var(--md-border); background: var(--md-surface-soft)">
                             <span x-text="lookupMessage"></span>
                         </div>
                         <div x-show="telegramChats.length > 1" x-cloak class="md:col-span-2">
