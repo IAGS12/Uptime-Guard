@@ -1,0 +1,16 @@
+:{$PORT} {
+    # WebSocket: forward /app/* to Reverb
+    @websocket {
+        path /app/*
+    }
+    reverse_proxy @websocket 127.0.0.1:9090
+
+    # PHP: serve Laravel app
+    root * /app/public
+    php_fastcgi 127.0.0.1:9000
+    file_server
+    encode gzip
+
+    # SPA fallback
+    try_files {path} {path}/ /index.php?{query}
+}
